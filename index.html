@@ -1,0 +1,149 @@
+<html>
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<style>
+		canvas{
+			margin:10px;
+		}
+
+		#tools {
+			/* position: fixed; */
+			
+			/* width: max-content;
+			display: flex;
+			flex-direction: column;
+			align-items: center; */
+		}
+		#tools > label{
+			text-align: center;
+			margin:20px 20px 20px 0;
+			display: flex;
+			flex-direction: column;
+		}
+		#tools > label:last-child{
+			flex-direction: row;
+			align-items: center;
+		}
+		#tools > label:last-child > button{
+			height : max-content;
+			margin:5px;
+		}
+		#backtracking-canvas{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width:100%;
+		}
+		#backtracking{
+			width:100%
+		}
+	</style>
+</head>
+<body class="bg-dark text-white p-5">
+	<div class="display-4 text-center p-5 my-3">
+N Queen Problem Using Backtracking
+	</div>
+	<div id="tools text-white bg-dark d-flex justify-content-center w-100">
+		<div id="n-container" class="my-3">
+			<label for="n" >n : 8</label>
+			<input style="width:200px;" id="n" type="range" class="form-range" min="1" max="20" value="8"/>
+		</div>
+		<!-- <div id="from-container" class="my-3">
+			<label for="l" >l : 1</label>
+			<input style="width:200px;" id="l" type="range" class="form-range" min="1" max=n value="1"/>
+		</div> -->
+		</div>
+		<div id="delay-container"  class="my-3">
+			<label for="delay">delay : </label>
+			<input id="delay" type="number" class="form-control" style="width:200px;" value="100"/>
+		</div>
+		<div  class="my-3">
+			<button class="btn btn-success" id="run">run</button>
+			<button class="btn btn-danger mx-3" id="stop" disabled>stop</button>
+		</div>
+	</div>
+
+	<div style="display: flex;">
+
+		<div id="backtracking">
+			<div id="backtracking-canvas" ></div>
+			<div class="run-info">
+				<div>
+					algorithm : <span>Backtracking</span>
+				</div>
+				<div>
+					status : <span class="status">stopped</span>
+				</div>
+				<div>
+					execution time : <span class="exec-time">NaN</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/chess-ui.js"></script>
+	<script src="js/n-queens-backtracking-engine.js"></script>
+	<script>
+		
+
+		document.getElementById('n').oninput = function(e){
+			document.querySelector('#n-container > label').innerHTML = 'n : ' + this.value;
+
+			engineB.n = + this.value;
+			chessB.renderBoard();
+		};
+        // document.getElementById('l').oninput = function(e){
+		// 	document.querySelector('#from-container > label').innerHTML = 'l : ' + this.value;
+
+		// 	engineB.l = + this.value;
+		// };
+		document.getElementById('run').onclick = function () {
+			const delay = + document.getElementById('delay').value;
+			runEvent();
+			let maxConflict = null;
+			const genTimer = (new Date()).getTime();
+			const backTimer = (new Date()).getTime();
+
+			chessB.run(delay).then(status => {
+				document.querySelector('#backtracking .status').innerHTML = 'stopped';
+				document.querySelector('#backtracking .exec-time').innerHTML = ((new Date()).getTime() - genTimer) / 1000 + 's';
+				stopEvent();
+			});
+		};
+
+		document.getElementById('stop').onclick = function () {
+			chessB.stop();
+			document.querySelectorAll('.status').forEach(el => el.innerHTML = 'stopped');
+			stopEvent();
+		};
+
+		function runEvent(){
+			document.querySelectorAll('.status').forEach(el => el.innerHTML = 'running');
+			document.querySelectorAll('.exec-time').forEach(el => el.innerHTML = 'NaN');
+
+			for(let id of ['run', 'delay', 'n']){
+				document.getElementById(id).disabled = true;
+			}
+			for(let id of ['stop']){
+				document.getElementById(id).disabled = false;
+			}
+		}
+		function stopEvent(){
+			for(let id of ['run', 'delay', 'n']){
+				document.getElementById(id).disabled = false;
+			}
+			for(let id of ['stop']){
+				document.getElementById(id).disabled = true;
+			}
+		}
+
+		const initialN = 8;
+		const engineB = new NQueensBacktrackingEngine(initialN);
+		const chessB = new ChessUI(engineB, { parent : document.getElementById('backtracking-canvas') });
+
+		chessB.renderBoard();
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+</body>
+</html>
